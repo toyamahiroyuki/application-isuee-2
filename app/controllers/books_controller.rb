@@ -2,13 +2,21 @@ class BooksController < ApplicationController
   before_action :authenticate_user!
 
   def show
-    @user = User.find(params[:id])
-  	@book = Book.find(params[:id])
+     @book = Book.find(params[:id])
+     @user = @book.user
+    # @user = User.find(params[:id])
+    # @book = Book.find(params[:id])
+  	# @book = @user.books.find(params[:id])
+
+    @book_comment = BookComment.new
+    @book_comments = BookComment.all
 
   end
   def index
+    @book_comments = BookComment.all
     @user = current_user
     @book = Book.new
+    # @booker = Book.find(params[:id])
   	@books = Book.all #一覧表示するためにBookモデルの情報を全てくださいのall
   end
 
@@ -17,7 +25,7 @@ class BooksController < ApplicationController
 
     @book.user = current_user
   	if @book.save #入力されたデータをdbに保存する。
-  		redirect_to book_path(current_user), notice: "successfully created book!"#保存された場合の移動先を指定。
+  		redirect_to book_path(@book), notice: "successfully created book!"#保存された場合の移動先を指定。
   	else
       @user = current_user
   		@books = Book.all
@@ -43,7 +51,7 @@ class BooksController < ApplicationController
 
   def destroy
   	@book = Book.find(params[:id])
-  	@book.destoy
+  	@book.destroy
   	redirect_to books_path, notice: "successfully delete book!"
   end
 
